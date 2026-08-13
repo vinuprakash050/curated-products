@@ -46,7 +46,12 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     if (!product?.id) return
 
     try {
-      let imageUrls = product.imageUrls || [] // Keep existing images by default
+      let imageUrls: string[] = []
+      
+      // Use existing images from formData (which tracks removed images)
+      if (formData.existingImageUrls && formData.existingImageUrls.length > 0) {
+        imageUrls = [...formData.existingImageUrls]
+      }
       
       // Upload new images to ImgBB if provided
       if (formData.images && formData.images.length > 0) {

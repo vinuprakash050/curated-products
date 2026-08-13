@@ -10,7 +10,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { Product } from '@/types/product';
+import { Product, SiteSettings } from '@/types/product';
 
 const COLLECTION_NAME = 'products';
 
@@ -95,7 +95,7 @@ export const deleteProduct = async (id: string) => {
 const SETTINGS_COLLECTION = 'siteSettings';
 const SETTINGS_DOC_ID = 'main';
 
-export const getSiteSettings = async () => {
+export const getSiteSettings = async (): Promise<SiteSettings | null> => {
   try {
     const settingsRef = doc(db, SETTINGS_COLLECTION, SETTINGS_DOC_ID);
     const docSnap = await getDoc(settingsRef);
@@ -103,7 +103,7 @@ export const getSiteSettings = async () => {
     console.log('Firestore getSiteSettings - exists:', docSnap.exists());
     
     if (docSnap.exists()) {
-      const data = { id: docSnap.id, ...docSnap.data() };
+      const data = { id: docSnap.id, ...docSnap.data() } as SiteSettings;
       console.log('Firestore getSiteSettings - data:', data);
       return data;
     }

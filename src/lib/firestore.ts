@@ -2,9 +2,11 @@ import {
   collection,
   addDoc,
   getDocs,
+  getDoc,
   doc,
   updateDoc,
   deleteDoc,
+  setDoc,
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from './firebase';
@@ -85,6 +87,57 @@ export const deleteProduct = async (id: string) => {
     await deleteDoc(docRef);
   } catch (error) {
     console.error('Error deleting product:', error);
+    throw error;
+  }
+};
+
+// Site Settings Management
+const SETTINGS_COLLECTION = 'siteSettings';
+const SETTINGS_DOC_ID = 'main';
+
+export const getSiteSettings = async () => {
+  try {
+    const settingsRef = doc(db, SETTINGS_COLLECTION, SETTINGS_DOC_ID);
+    const docSnap = await getDoc(settingsRef);
+    
+    console.log('Firestore getSiteSettings - exists:', docSnap.exists());
+    
+    if (docSnap.exists()) {
+      const data = { id: docSnap.id, ...docSnap.data() };
+      console.log('Firestore getSiteSettings - data:', data);
+      return data;
+    }
+    
+    console.log('Firestore getSiteSettings - no document found');
+    return null;
+  } catch (error) {
+    console.error('Error fetching site settings:', error);
+    return null;
+  }
+};
+
+export const updateComingSoonImage = async (imageUrl: string) => {
+  try {
+    console.log('Firestore updateComingSoonImage - URL:', imageUrl);
+    const settingsRef = doc(db, SETTINGS_COLLECTION, SETTINGS_DOC_ID);
+    const docSnap = await getDoc(settingsRef);
+    
+    if (!docSnap.exists()) {
+      console.log('Firestore updateComingSoonImage - creating new document');
+      // Create if doesn't exist using setDoc
+      await setDoc(settingsRef, {
+        comingSoonImage: imageUrl,
+      });
+    } else {
+      console.log('Firestore updateComingSoonImage - updating existing document');
+      // Update existing
+      await updateDoc(settingsRef, {
+        comingSoonImage: imageUrl,
+      });
+    }
+    console.log('Firestore updateComingSoonImage - saved successfully');
+  } catch (error) {
+    console.error('Error updating hero image:', error);
     throw error;
   }
 };

@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import Image from 'next/image'
 import { Search, Shield, DollarSign, Truck, Lock, ArrowRight } from 'lucide-react'
 import Header from '@/components/Header'
 import ProductCard from '@/components/ProductCard'
 import { Product } from '@/types/product'
-import { getProducts, getFeaturedProducts } from '@/lib/firestore'
+import { getProducts, getFeaturedProducts, getSiteSettings } from '@/lib/firestore'
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -13,16 +14,23 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All Products')
+  const [comingSoonImage, setComingSoonImage] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const [allProducts, featured] = await Promise.all([
+        const [allProducts, featured, settings] = await Promise.all([
           getProducts(),
-          getFeaturedProducts()
+          getFeaturedProducts(),
+          getSiteSettings()
         ])
         setProducts(allProducts)
         setFeaturedProducts(featured)
+        console.log('Settings fetched:', settings)
+        if (settings && settings.comingSoonImage) {
+          console.log('Setting hero image:', settings.comingSoonImage)
+          setComingSoonImage(settings.comingSoonImage)
+        }
       } catch (error) {
         console.error('Error fetching products:', error)
       } finally {
@@ -129,13 +137,21 @@ export default function HomePage() {
                 <div className="absolute bottom-12 left-8 w-8 h-8 bg-purple-200 dark:bg-purple-800/50 rounded-full opacity-40"></div>
                 <div className="absolute top-1/2 right-0 w-6 h-6 bg-yellow-200 dark:bg-yellow-800/50 rounded-full opacity-50"></div>
                 
-                {/* Center placeholder for products */}
-                <div className="absolute inset-16 bg-white dark:bg-gray-800 rounded-full shadow-lg flex items-center justify-center border dark:border-gray-700">
-                  <div className="text-center">
-                    <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg mx-auto mb-4"></div>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">Product Images</p>
-                    <p className="text-gray-400 dark:text-gray-500 text-xs">Coming Soon</p>
-                  </div>
+                {/* Center area for hero image */}
+                <div className="absolute inset-16 bg-white dark:bg-gray-800 rounded-full shadow-lg flex items-center justify-center border dark:border-gray-700 overflow-hidden">
+                  {comingSoonImage ? (
+                    <div className="relative w-full h-full p-4 flex items-center justify-center">
+                      <Image
+                        src={comingSoonImage}
+                        alt="Featured visual"
+                        fill
+                        className="object-contain"
+                        unoptimized
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-gray-400 dark:text-gray-600 text-xs">No image uploaded</div>
+                  )}
                 </div>
                 
                 {/* Handpicked Quality Badge */}

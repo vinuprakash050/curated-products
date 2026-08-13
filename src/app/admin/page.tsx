@@ -7,13 +7,15 @@ import Header from '@/components/Header'
 import AdminLogin from '@/components/admin/AdminLogin'
 import ProductForm from '@/components/admin/ProductForm'
 import ProductTable from '@/components/admin/ProductTable'
+import ComingSoonImageUpload from '@/components/admin/ComingSoonImageUpload'
 import { Product, ProductFormData } from '@/types/product'
-import { getProducts, createProduct, deleteProduct } from '@/lib/firestore'
+import { getProducts, createProduct, deleteProduct, getSiteSettings, updateComingSoonImage } from '@/lib/firestore'
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [comingSoonImage, setComingSoonImage] = useState<string | undefined>(undefined)
   const router = useRouter()
 
   useEffect(() => {
@@ -37,8 +39,16 @@ export default function AdminPage() {
 
   const fetchProducts = async () => {
     try {
-      const productList = await getProducts()
+      const [productList, settings] = await Promise.all([
+        getProducts(),
+        getSiteSettings()
+      ])
+      console.log('Admin - Settings fetched:', settings)
       setProducts(productList)
+      if (settings && settings.comingSoonImage) {
+        console.log('Admin - Setting hero image:', settings.comingSoonImage)
+        setComingSoonImage(settings.comingSoonImage)
+      }
     } catch (error) {
       console.error('Error fetching products:', error)
       // If it's a Firebase config error, show helpful message
@@ -122,6 +132,18 @@ export default function AdminPage() {
     }
   }
 
+  const handleComingSoonImageUpload = async (imageUrl: string) => {
+    try {
+      console.log('Uploading hero image:', imageUrl)
+      await updateComingSoonImage(imageUrl)
+      setComingSoonImage(imageUrl)
+      console.log('Hero image saved to Firestore')
+    } catch (error) {
+      console.error('Error updating hero image:', error)
+      throw error
+    }
+  }
+
   // Show login page if not authenticated
   if (isAuthenticated === false) {
     return <AdminLogin onLogin={handleLogin} />
@@ -174,8 +196,15 @@ export default function AdminPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Add Product Form */}
-          <div className="lg:col-span-1">
+          {/* Left Column - Forms */}
+          <div className="lg:col-span-1 space-y-8">
+            {/* Coming Soon Image Upload */}
+            <ComingSoonImageUpload 
+              currentImage={comingSoonImage}
+              onUpload={handleComingSoonImageUpload}
+            />
+            
+            {/* Add Product Form */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Add Product</h2>
               <ProductForm onSubmit={handleCreateProduct} />

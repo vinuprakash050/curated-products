@@ -17,6 +17,11 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isLiked, setIsLiked] = useState(false)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -78,6 +83,31 @@ export default function ProductDetailPage() {
     }
   }
 
+  // Touch handlers for swipe
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd || !product?.imageUrls) return
+    
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+
+    if (isLeftSwipe && product.imageUrls.length > 1) {
+      nextImage()
+    }
+    if (isRightSwipe && product.imageUrls.length > 1) {
+      prevImage()
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -131,7 +161,12 @@ export default function ProductDetailPage() {
           {/* Product Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="aspect-square relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg group">
+            <div 
+              className="aspect-square relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg group"
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
+            >
               {images.length > 0 ? (
                 <>
                   <Image
@@ -143,18 +178,18 @@ export default function ProductDetailPage() {
                     unoptimized
                   />
                   
-                  {/* Image Navigation */}
+                  {/* Image Navigation - Hidden on mobile, shown on hover for desktop */}
                   {images.length > 1 && (
                     <>
                       <button
                         onClick={prevImage}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-white dark:hover:bg-gray-800"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 p-3 rounded-full opacity-0 md:group-hover:opacity-100 transition-opacity z-10 hover:bg-white dark:hover:bg-gray-800"
                       >
                         <ChevronLeft className="h-6 w-6" />
                       </button>
                       <button
                         onClick={nextImage}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-white dark:hover:bg-gray-800"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 p-3 rounded-full opacity-0 md:group-hover:opacity-100 transition-opacity z-10 hover:bg-white dark:hover:bg-gray-800"
                       >
                         <ChevronRight className="h-6 w-6" />
                       </button>

@@ -264,7 +264,7 @@ export default function ProductForm({ product, onSubmit, isEditing = false }: Pr
           checked={formData.featured}
           onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
         />
-        <label htmlFor="featured" className="text-sm font-medium text-gray-700">
+        <label htmlFor="featured" className="text-sm font-medium text-gray-700 dark:text-gray-300">
           Featured Product
         </label>
       </div>

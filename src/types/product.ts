@@ -19,3 +19,8 @@ export interface ProductFormData {
   affiliateUrl: string;
   featured: boolean;
 }
+
+export interface SiteSettings {
+  id?: string;
+  comingSoonImage?: string;
+}

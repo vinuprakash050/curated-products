@@ -18,6 +18,7 @@ export interface ProductFormData {
   description: string;
   affiliateUrl: string;
   featured: boolean;
+  existingImageUrls?: string[]; // Track which existing images to keep
 }
 
 export interface SiteSettings {

@@ -26,6 +26,10 @@ export default function ProductForm({ product, onSubmit, isEditing = false }: Pr
   const [imagePreviews, setImagePreviews] = useState<string[]>(
     product?.imageUrls || []
   )
+  // Track existing image URLs that should be kept
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>(
+    product?.imageUrls || []
+  )
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -52,21 +56,26 @@ export default function ProductForm({ product, onSubmit, isEditing = false }: Pr
   }
 
   const removeImage = (index: number) => {
-    // Check if it's an existing image (from imageUrls) or new image (from files)
-    const existingImagesCount = (product?.imageUrls?.length || 0)
+    const preview = imagePreviews[index]
     
-    if (index < existingImagesCount) {
-      // Removing existing image - just remove from previews
-      setImagePreviews(prev => prev.filter((_, i) => i !== index))
+    // Check if it's an existing image URL or a new local preview
+    const existingIndex = existingImageUrls.indexOf(preview)
+    
+    if (existingIndex !== -1) {
+      // It's an existing image - remove from existingImageUrls
+      setExistingImageUrls(prev => prev.filter((_, i) => i !== existingIndex))
     } else {
-      // Removing new image - remove from both files and previews
-      const newImageIndex = index - existingImagesCount
+      // It's a new image - find and remove from formData.images
+      const newImageStartIndex = existingImageUrls.length
+      const fileIndex = index - newImageStartIndex
       setFormData(prev => ({
         ...prev,
-        images: prev.images.filter((_, i) => i !== newImageIndex)
+        images: prev.images.filter((_, i) => i !== fileIndex)
       }))
-      setImagePreviews(prev => prev.filter((_, i) => i !== index))
     }
+    
+    // Remove from previews
+    setImagePreviews(prev => prev.filter((_, i) => i !== index))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,7 +89,13 @@ export default function ProductForm({ product, onSubmit, isEditing = false }: Pr
     setIsSubmitting(true)
     
     try {
-      await onSubmit(formData)
+      // Add existing image URLs to formData
+      const submitData = {
+        ...formData,
+        existingImageUrls
+      }
+      
+      await onSubmit(submitData)
       
       // Reset form if not editing
       if (!isEditing) {
@@ -94,6 +109,7 @@ export default function ProductForm({ product, onSubmit, isEditing = false }: Pr
           featured: false,
         })
         setImagePreviews([])
+        setExistingImageUrls([])
       }
     } catch (error) {
       console.error('Form submission error:', error)

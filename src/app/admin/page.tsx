@@ -79,7 +79,12 @@ export default function AdminPage() {
     try {
       let imageUrls: string[] = []
       
-      // Upload images to ImgBB if provided
+      // Keep existing images if provided
+      if (formData.existingImageUrls && formData.existingImageUrls.length > 0) {
+        imageUrls = [...formData.existingImageUrls]
+      }
+      
+      // Upload new images to ImgBB if provided
       if (formData.images && formData.images.length > 0) {
         const uploadFormData = new FormData()
         formData.images.forEach((image) => {
@@ -97,7 +102,7 @@ export default function AdminPage() {
           throw new Error(result.error || 'Failed to upload images')
         }
         
-        imageUrls = result.imageUrls
+        imageUrls = [...imageUrls, ...result.imageUrls]
       }
 
       // Create product in Firestore

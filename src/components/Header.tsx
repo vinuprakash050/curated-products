@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ShoppingBag, Moon, Sun, Search } from 'lucide-react'
+import Image from 'next/image'
+import { Moon, Sun, Search } from 'lucide-react'
 
 export default function Header() {
   const [isDark, setIsDark] = useState(false)
@@ -36,11 +37,22 @@ export default function Header() {
     <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link href="/" className="flex items-center space-x-2">
-            <ShoppingBag className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-              Curated Products
-            </h1>
+          <Link href="/" className="flex items-center space-x-3">
+            <Image 
+              src="/logo-main.png" 
+              alt="buyorbyee Logo" 
+              width={40} 
+              height={40}
+              className="h-10 w-10"
+            />
+            <div className="flex flex-col">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                buyorbyee
+              </h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight">
+                Curated Products
+              </p>
+            </div>
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">

@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   title: 'Curated Products - Products Worth Checking Out',
   description: 'Discover amazing products handpicked for you. From tech to fashion, find what you need.',
   keywords: ['products', 'shopping', 'tech', 'fashion', 'fitness', 'home', 'travel'],
+  icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',
+  },
 }
 
 export default function RootLayout({

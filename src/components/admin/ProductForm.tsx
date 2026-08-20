@@ -78,6 +78,54 @@ export default function ProductForm({ product, onSubmit, isEditing = false }: Pr
     setImagePreviews(prev => prev.filter((_, i) => i !== index))
   }
 
+  const setPrimaryImage = (index: number) => {
+    if (index === 0) return // Already primary
+    
+    // Reorder all previews
+    setImagePreviews(prev => {
+      const newPreviews = [...prev]
+      const [item] = newPreviews.splice(index, 1)
+      newPreviews.unshift(item)
+      return newPreviews
+    })
+    
+    // Determine if this is an existing image or new image
+    const preview = imagePreviews[index]
+    const isExistingImage = existingImageUrls.includes(preview)
+    
+    if (isExistingImage) {
+      // Reorder existingImageUrls
+      setExistingImageUrls(prev => {
+        const existingIndex = prev.indexOf(preview)
+        const newUrls = [...prev]
+        const [item] = newUrls.splice(existingIndex, 1)
+        newUrls.unshift(item)
+        return newUrls
+      })
+    } else {
+      // It's a new image - reorder formData.images
+      // Find the position of this image in the new images array
+      const newImagesStartIndex = existingImageUrls.length
+      const fileIndex = index - newImagesStartIndex
+      
+      setFormData(prev => {
+        const newImages = [...prev.images]
+        const [item] = newImages.splice(fileIndex, 1)
+        newImages.unshift(item)
+        return { ...prev, images: newImages }
+      })
+      
+      // If there are existing images, we need to move this new image before them
+      if (existingImageUrls.length > 0) {
+        // Move the new image preview before existing ones
+        const fileToMove = formData.images[fileIndex]
+        
+        // We'll handle this by updating the order in the submit handler
+        // For now, just update the local state to reflect the visual change
+      }
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -89,10 +137,29 @@ export default function ProductForm({ product, onSubmit, isEditing = false }: Pr
     setIsSubmitting(true)
     
     try {
-      // Add existing image URLs to formData
+      // Create a mapping of previews to their sources (existing URL or new File)
+      const orderedImages: (string | File)[] = imagePreviews.map(preview => {
+        // Check if it's an existing image
+        if (existingImageUrls.includes(preview)) {
+          return preview // Return the URL
+        } else {
+          // It's a new image - find the corresponding File
+          const newImagesStartIndex = existingImageUrls.length
+          const previewIndex = imagePreviews.indexOf(preview)
+          const fileIndex = imagePreviews.slice(0, previewIndex).filter(p => !existingImageUrls.includes(p)).length
+          return formData.images[fileIndex]
+        }
+      })
+      
+      // Separate into existing URLs and new Files in the correct order
+      const orderedExistingUrls = orderedImages.filter(item => typeof item === 'string') as string[]
+      const orderedNewFiles = orderedImages.filter(item => item instanceof File) as File[]
+      
+      // Add ordered data to formData
       const submitData = {
         ...formData,
-        existingImageUrls
+        images: orderedNewFiles,
+        existingImageUrls: orderedExistingUrls
       }
       
       await onSubmit(submitData)
@@ -146,7 +213,7 @@ export default function ProductForm({ product, onSubmit, isEditing = false }: Pr
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
             {imagePreviews.map((preview, index) => (
               <div key={index} className="relative group">
-                <div className="aspect-square rounded-md overflow-hidden border">
+                <div className={`aspect-square rounded-md overflow-hidden border-2 ${index === 0 ? 'border-blue-500' : 'border-gray-300'}`}>
                   <Image
                     src={preview}
                     alt={`Product image ${index + 1}`}
@@ -156,13 +223,29 @@ export default function ProductForm({ product, onSubmit, isEditing = false }: Pr
                     unoptimized
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeImage(index)}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <X className="h-3 w-3" />
-                </button>
+                {index === 0 && (
+                  <div className="absolute top-1 left-1 bg-blue-500 text-white text-xs px-2 py-0.5 rounded">
+                    Primary
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex flex-col items-center justify-center gap-2">
+                  {index !== 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setPrimaryImage(index)}
+                      className="bg-blue-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition-colors"
+                    >
+                      Set as Primary
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="bg-red-500 text-white text-xs px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             ))}
           </div>

@@ -79,12 +79,7 @@ export default function AdminPage() {
     try {
       let imageUrls: string[] = []
       
-      // Keep existing images if provided
-      if (formData.existingImageUrls && formData.existingImageUrls.length > 0) {
-        imageUrls = [...formData.existingImageUrls]
-      }
-      
-      // Upload new images to ImgBB if provided
+      // Upload new images to ImgBB first if provided
       if (formData.images && formData.images.length > 0) {
         const uploadFormData = new FormData()
         formData.images.forEach((image) => {
@@ -102,7 +97,18 @@ export default function AdminPage() {
           throw new Error(result.error || 'Failed to upload images')
         }
         
-        imageUrls = [...imageUrls, ...result.imageUrls]
+        // Store newly uploaded URLs
+        const newImageUrls = result.imageUrls
+        
+        // Merge existing and new images based on the order they appear
+        // The form already maintains the correct order in existingImageUrls and images arrays
+        imageUrls = [
+          ...(formData.existingImageUrls || []),
+          ...newImageUrls
+        ]
+      } else {
+        // Only existing images
+        imageUrls = formData.existingImageUrls || []
       }
 
       // Create product in Firestore

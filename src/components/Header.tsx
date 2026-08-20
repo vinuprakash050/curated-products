@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Moon, Sun, Search } from 'lucide-react'
+import { Moon, Sun, Search, Instagram } from 'lucide-react'
 
 export default function Header() {
   const [isDark, setIsDark] = useState(false)
@@ -36,23 +36,35 @@ export default function Header() {
   return (
     <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link href="/" className="flex items-center space-x-3">
+        <div className="flex justify-between items-center h-20">
+          <Link href="/" className="flex items-center">
             <Image 
               src="/logo-main.png" 
               alt="buyorbyee Logo" 
-              width={40} 
-              height={40}
-              className="h-10 w-10"
+              width={64} 
+              height={64}
+              className="h-14 w-14"
             />
-            <div className="flex flex-col">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-                buyorbyee
-              </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight">
-                Curated Products
-              </p>
-            </div>
+            {/* Light mode logo - hidden on mobile */}
+            <Image 
+              src="/logomain.png" 
+              alt="buyorbyee" 
+              width={280} 
+              height={88}
+              className="hidden md:block dark:hidden"
+              style={{ height: '5.5rem',marginTop:'2vh', width: 'auto' }}
+              priority
+            />
+            {/* Dark mode logo - hidden on mobile */}
+            <Image 
+              src="/logomain-dark.png" 
+              alt="buyorbyee" 
+              width={280} 
+              height={88}
+              className="hidden md:dark:block"
+              style={{ height: '5.5rem',marginTop:'2vh', width: 'auto' }}
+              priority
+            />
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
@@ -64,7 +76,19 @@ export default function Header() {
             </Link>
           </nav>
           
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
+            {/* Instagram Link */}
+            <a 
+              href="https://www.instagram.com/buyorbye.ourstore" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 rounded-full transition-colors"
+              aria-label="Visit our Instagram for product reviews"
+              title="Product Reviews on Instagram"
+            >
+              <Instagram className="h-5 w-5" />
+            </a>
+            
             {/* Search Icon for Mobile */}
             <button className="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
               <Search className="h-5 w-5" />

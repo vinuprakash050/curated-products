@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { X, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { ProductFormData, Product } from '@/types/product'
 import MarkdownDescription from '@/components/MarkdownDescription'
 
@@ -114,15 +114,6 @@ export default function ProductForm({ product, onSubmit, isEditing = false }: Pr
         newImages.unshift(item)
         return { ...prev, images: newImages }
       })
-      
-      // If there are existing images, we need to move this new image before them
-      if (existingImageUrls.length > 0) {
-        // Move the new image preview before existing ones
-        const fileToMove = formData.images[fileIndex]
-        
-        // We'll handle this by updating the order in the submit handler
-        // For now, just update the local state to reflect the visual change
-      }
     }
   }
 
@@ -144,7 +135,6 @@ export default function ProductForm({ product, onSubmit, isEditing = false }: Pr
           return preview // Return the URL
         } else {
           // It's a new image - find the corresponding File
-          const newImagesStartIndex = existingImageUrls.length
           const previewIndex = imagePreviews.indexOf(preview)
           const fileIndex = imagePreviews.slice(0, previewIndex).filter(p => !existingImageUrls.includes(p)).length
           return formData.images[fileIndex]

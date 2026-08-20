@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import Head from 'next/head'
 import { ArrowLeft, ExternalLink, ChevronLeft, ChevronRight, Heart, Share2 } from 'lucide-react'
 import Header from '@/components/Header'
 import MarkdownDescription from '@/components/MarkdownDescription'
+import StructuredData from '@/components/StructuredData'
 import { Product } from '@/types/product'
 import { getProducts } from '@/lib/firestore'
 
@@ -31,6 +33,14 @@ export default function ProductDetailPage() {
         
         if (foundProduct) {
           setProduct(foundProduct)
+          // Update page metadata dynamically
+          document.title = `${foundProduct.name} | buyorbyee`
+          
+          // Update meta description
+          const metaDescription = document.querySelector('meta[name="description"]')
+          if (metaDescription) {
+            metaDescription.setAttribute('content', foundProduct.description.substring(0, 160))
+          }
         } else {
           router.push('/')
         }
@@ -145,6 +155,19 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <Head>
+        <title>{product.name} | buyorbyee</title>
+        <meta name="description" content={product.description.substring(0, 160)} />
+        <meta property="og:title" content={`${product.name} | buyorbyee`} />
+        <meta property="og:description" content={product.description.substring(0, 160)} />
+        <meta property="og:image" content={product.imageUrls[0]} />
+        <meta property="og:type" content="product" />
+        <link rel="canonical" href={`https://buyorbyeee.vercel.app/product/${product.id}`} />
+      </Head>
+      
+      {/* Add structured data for SEO */}
+      <StructuredData product={product} />
+      
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

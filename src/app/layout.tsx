@@ -52,8 +52,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    // Add these after setting up in Google Search Console and Bing Webmaster Tools
-    // google: 'your-google-verification-code',
+    google: '0BR_-0PgyNGl3_x93U-nHaUSZ-r1AY-t0yMdsXl2hUQ',
     // bing: 'your-bing-verification-code',
   },
   alternates: {

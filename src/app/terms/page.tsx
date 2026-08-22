@@ -44,7 +44,7 @@ export default function TermsPage() {
               cost to you.
             </p>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              <strong>Amazon Disclosure:</strong> "As an Amazon Associate, I earn from qualifying purchases."
+              <strong>Amazon Disclosure:</strong> &quot;As an Amazon Associate, I earn from qualifying purchases.&quot;
             </p>
           </section>
 

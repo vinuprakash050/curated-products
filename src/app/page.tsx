@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import Image from 'next/image'
-import { Search, Shield, DollarSign, Truck, Lock, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { Search, Shield, DollarSign, Truck, ArrowRight } from 'lucide-react'
 import Header from '@/components/Header'
 import ProductCard from '@/components/ProductCard'
 import { Product } from '@/types/product'
@@ -220,15 +221,15 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Trust Badges - Compact Footer */}
+        {/* Trust Badges - Accurate Claims */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center flex-shrink-0">
               <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <h4 className="font-medium text-gray-900 dark:text-white text-sm">Quality Assured</h4>
-              <p className="text-gray-600 dark:text-gray-400 text-xs">Handpicked & tested products</p>
+              <h4 className="font-medium text-gray-900 dark:text-white text-sm">Curated Picks</h4>
+              <p className="text-gray-600 dark:text-gray-400 text-xs">Products worth checking out</p>
             </div>
           </div>
           
@@ -237,8 +238,8 @@ export default function HomePage() {
               <DollarSign className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h4 className="font-medium text-gray-900 dark:text-white text-sm">Best Prices</h4>
-              <p className="text-gray-600 dark:text-gray-400 text-xs">Amazing deals & offers</p>
+              <h4 className="font-medium text-gray-900 dark:text-white text-sm">Price-conscious</h4>
+              <p className="text-gray-600 dark:text-gray-400 text-xs">Find useful products at good prices</p>
             </div>
           </div>
           
@@ -247,21 +248,44 @@ export default function HomePage() {
               <Truck className="w-4 h-4 text-orange-600 dark:text-orange-400" />
             </div>
             <div>
-              <h4 className="font-medium text-gray-900 dark:text-white text-sm">Fast Delivery</h4>
-              <p className="text-gray-600 dark:text-gray-400 text-xs">Quick & reliable shipping</p>
+              <h4 className="font-medium text-gray-900 dark:text-white text-sm">Amazon Checkout</h4>
+              <p className="text-gray-600 dark:text-gray-400 text-xs">Complete your purchase on Amazon</p>
             </div>
           </div>
           
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center flex-shrink-0">
-              <Lock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <Search className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <h4 className="font-medium text-gray-900 dark:text-white text-sm">Secure Payments</h4>
-              <p className="text-gray-600 dark:text-gray-400 text-xs">100% secure checkout</p>
+              <h4 className="font-medium text-gray-900 dark:text-white text-sm">Product Discovery</h4>
+              <p className="text-gray-600 dark:text-gray-400 text-xs">Discover useful & interesting finds</p>
             </div>
           </div>
         </div>
+
+        {/* Footer Links */}
+        <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-600 dark:text-gray-400">
+            <Link href="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              Terms & Conditions
+            </Link>
+            <a 
+              href="https://www.instagram.com/buyorbye.ourstore" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              Contact Us
+            </a>
+          </div>
+          <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-4">
+            © {new Date().getFullYear()} buyorbyee. As an Amazon Associate, we earn from qualifying purchases.
+          </p>
+        </footer>
       </main>
     </div>
   )
